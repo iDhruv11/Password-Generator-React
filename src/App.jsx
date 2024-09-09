@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useReducer, useRef, useState } from "react";
 
 const App = () => {
   
@@ -8,6 +8,8 @@ const App = () => {
   const numbers = '1234567890';
   const [charStr, setCharStr] = useState(alphabets);
   const sliderValue = useRef();
+  const passwordElement = useRef();
+  const [showCopied, setShowCopied] = useState(false);
   let password = '';
   let passwordIsGood = false;
   const numCheckbox = useRef(
@@ -74,18 +76,34 @@ const App = () => {
     generatePassword();
     passwordIsGood = verifyPassword();
   }
+  
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(passwordElement.current.textContent)
+      .then(() => {
+        setShowCopied(true);
+        setTimeout(() => {
+          setShowCopied(false);
+        }, 3000);
+      })
+  }
 
   return (
 
     <div className="bg-black h-lvh pt-20">
 
       {/* Main Card */}
-      <div className="w-[900px] bg-gray-800 px-8 py-6 rounded-md mx-auto">
+      <div className="w-[900px] bg-gray-800 px-8 py-6 rounded-md mx-auto relative">
 
         {/* Generated Password Field */}
         <div className="bg-white flex justify-between rounded-md mb-10">
-          <p className="text-orange-500 text-2xl py-2 px-4">{password}</p>
-          <p className="bg-blue-600 rounded-r-md text-2xl text-white py-2 px-4 cursor-pointer ring-[.1px] ring-blue-600">copy</p>
+          <p
+            className="text-orange-500 text-2xl py-2 px-4"
+            ref = {passwordElement}  
+          >{password}</p>
+          <p
+            className="bg-blue-600 rounded-r-md text-2xl text-white py-2 px-4 cursor-pointer ring-[.1px] ring-blue-600"
+            onClick={copyToClipboard}
+          >copy</p>
         </div>
 
         {/* Password Structure Controls */}
@@ -153,6 +171,9 @@ const App = () => {
             <label htmlFor="characters" className="ml-2">Characters</label>
           </div>
 
+        </div>
+        <div className={`text-green-700 bg-green-300 absolute px-4 py-2 rounded-md font-semibold text-lg right-4 ${ (showCopied) ? `-top-10 opacity-100 scale-100` : `top-0 scale-50 opacity-0` } transition-all duration-150 ease-linear`}>
+          ✅ Copied
         </div>
       </div>
 
